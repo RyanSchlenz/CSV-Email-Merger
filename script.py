@@ -3,7 +3,7 @@ import json
 
 # Function to standardize email addresses
 def standardize_email(email):
-   return email.lower().strip() if isinstance(email, str) else email
+    return email.lower().strip() if isinstance(email, str) else email
 
 try:
     # Load the configuration file
@@ -54,9 +54,10 @@ try:
     # Update 'organization' with 'Company' data where it matches
     merged_df['organization'] = merged_df.apply(lambda x: x['Company'] if pd.notna(x['Company']) else x['organization'], axis=1)
 
-    # Add EmployeeID to File 1 where available
-    merged_df['EmployeeID'] = merged_df['EmployeeID'].fillna('')  # Replace NaNs with empty string if needed
-    print("\nMerged DataFrame after updating organization and adding EmployeeID:")
+    # Route EmployeeID to external_id
+    merged_df['external_id'] = merged_df['EmployeeID'].fillna('')  # Replace NaNs with empty string if needed
+
+    print("\nMerged DataFrame after updating organization and routing EmployeeID to external_id:")
     print(merged_df)
 
     # Select desired columns for the new file
@@ -65,7 +66,7 @@ try:
                         'external_id', 'tags', 'alias', 'active', 'shared', 'shared_agent', 'last_login_at',
                         'two_factor_auth_enabled', 'signature', 'details', 'notes', 'role_type', 'custom_role_id',
                         'moderator', 'ticket_restriction', 'only_private_comments', 'restricted_agent', 'suspended',
-                        'default_group_id', 'report_csv', 'user_fields', 'abilities', 'organization', 'EmployeeID']
+                        'default_group_id', 'report_csv', 'user_fields', 'abilities', 'organization']
 
     # Check if all selected columns are present in the merged DataFrame
     missing_columns = [col for col in selected_columns if col not in merged_df.columns]
