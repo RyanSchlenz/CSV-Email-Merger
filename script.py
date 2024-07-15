@@ -42,12 +42,15 @@ print("\nDataFrame 2 (file2):")
 print(df2)
 
 try:
+    # Filter out rows where 'name' starts with 'Caller', '+1', or any number
+    df1 = df1[~df1['name'].str.match(r'^(Caller|\+1|\d)', na=False)]
+
     # Standardize email addresses
     df1['email'] = df1['email'].apply(standardize_email)
     df2['UserPrincipalName'] = df2['UserPrincipalName'].apply(standardize_email)  # Assuming 'UserPrincipalName' is the correct column
 
-    # Merge df1 and df2 on standardized 'email' (left join)
-    merged_df = df1.merge(df2[['UserPrincipalName', 'Company', 'EmployeeID']], how='left', left_on='email', right_on='UserPrincipalName')
+    # Merge df1 and df2 where both 'email' and 'UserPrincipalName' match
+    merged_df = df1.merge(df2[['UserPrincipalName', 'Company', 'EmployeeID']], how='inner', left_on='email', right_on='UserPrincipalName')
     print("\nMerged DataFrame:")
     print(merged_df)
 
@@ -73,6 +76,9 @@ try:
     if missing_columns:
         print(f"Error: The following columns are missing in the merged DataFrame: {missing_columns}")
         exit(1)
+
+    # Remove duplicates based on 'id' column
+    merged_df.drop_duplicates(subset=['id'], keep='last', inplace=True)
 
     # Save updated data to the new file
     merged_df[selected_columns].to_csv(updated_path, index=False)
